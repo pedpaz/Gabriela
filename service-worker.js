@@ -1,7 +1,7 @@
 // Service Worker — gabriela.
 // Estratégia: network-first pro HTML/app.js (pega versão nova), cache-first pros assets + OCR.
-const CACHE = 'gabriela-v3';
-const VERSION = 'v3';
+const CACHE = 'gabriela-v5';
+const VERSION = 'v5';
 const FILES = [
   './',
   './index.html',
