@@ -1,0 +1,23 @@
+gabriela. — deploy no GitHub Pages
+====================================
+
+⚠️ REGRA DE OURO: suba os ARQUIVOS soltos, NÃO a pasta.
+O index.html tem que ficar na RAIZ do repositório.
+
+Arquivos desta pasta (são 7):
+  - index.html
+  - app.js
+  - manifest.json
+  - icon-192.png
+  - icon-512.png
+  - apple-touch-icon.png
+  - favicon.svg
+
+PASSOS:
+1. github.com -> "+" -> New repository -> nome "gabriela" -> Public -> Create
+2. "uploading an existing file" -> seleciona os 7 arquivos de dentro desta pasta -> Commit
+3. Settings -> Pages -> Source "Deploy from a branch" -> Branch "main" / "(root)" -> Save
+4. Espera ~1 min -> URL: https://SEU_USUARIO.github.io/gabriela/
+5. Abre no Safari do iPhone -> Compartilhar -> Adicionar a Tela de Inicio
+
+Para atualizar depois: substitui o arquivo no repo, o Pages atualiza sozinho.
