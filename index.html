@@ -59,6 +59,27 @@ body {
   background: linear-gradient(90deg, transparent, #C4A059, transparent);
   margin: 4px 0;
 }
+
+    #update-banner {
+      position: fixed; left: 50%; bottom: 104px; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 12px; z-index: 60;
+      background: #2D241E; color: #F7F0E6; padding: 12px 16px; border-radius: 999px;
+      box-shadow: 0 8px 28px rgba(45,36,30,.35); font-family: 'Manrope', sans-serif; font-size: 13px;
+      animation: fadeUp .4s ease; max-width: 90%;
+    }
+    #update-banner button {
+      background: #C4A059; color: #2D241E; border: none; border-radius: 999px;
+      padding: 7px 14px; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 700;
+      letter-spacing: .03em; cursor: pointer; white-space: nowrap;
+    }
+    #install-chip {
+      position: fixed; left: 18px; bottom: 34px; z-index: 55;
+      background: #FFFFFF; color: #9B4D5C; border: 1px solid rgba(155,77,92,.35);
+      font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .04em;
+      padding: 10px 16px; border-radius: 999px; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(45,36,30,.18); animation: fadeUp .4s ease;
+    }
+    @keyframes fadeUp { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -71,5 +92,71 @@ body {
     </div>
   </div>
   <script src="./app.js"></script>
+  <script>
+  /* PWA — service worker, auto-update e instalação */
+  if ('serviceWorker' in navigator) {
+    var hasReloaded = false;
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      if (e.data && e.data.type === 'SW_UPDATED' && !hasReloaded) {
+        hasReloaded = true;
+        setTimeout(function () { window.location.reload(); }, 500);
+      }
+    });
+    var controllerChanged = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (controllerChanged) return;
+      controllerChanged = true;
+      window.location.reload();
+    });
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./service-worker.js').then(function (reg) {
+        setInterval(function () { reg.update().catch(function () {}); }, 60000);
+        if (reg.waiting) showUpdateBanner(reg);
+        reg.addEventListener('updatefound', function () {
+          var newSW = reg.installing;
+          if (!newSW) return;
+          newSW.addEventListener('statechange', function () {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateBanner(reg);
+              newSW.postMessage({ type: 'SKIP_WAITING' });
+            }
+          });
+        });
+      }).catch(function (err) { console.warn('SW falhou:', err); });
+    });
+  }
+  function showUpdateBanner(reg) {
+    if (document.getElementById('update-banner')) return;
+    var b = document.createElement('div');
+    b.id = 'update-banner';
+    b.innerHTML = '<span>✨ Versão nova disponível</span><button id="btn-reload-now">Atualizar</button>';
+    document.body.appendChild(b);
+    document.getElementById('btn-reload-now').addEventListener('click', function () {
+      if (reg && reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      setTimeout(function () { window.location.reload(); }, 300);
+    });
+  }
+  var deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if (document.getElementById('install-chip')) return;
+    var chip = document.createElement('button');
+    chip.id = 'install-chip';
+    chip.textContent = '↓ Instalar app';
+    chip.addEventListener('click', function () {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(function () {
+        deferredInstallPrompt = null;
+        chip.remove();
+      });
+    });
+    document.body.appendChild(chip);
+  });
+  window.addEventListener('appinstalled', function () {
+    var c = document.getElementById('install-chip'); if (c) c.remove();
+  });
+  </script>
 </body>
 </html>

@@ -1,23 +1,20 @@
-gabriela. — deploy no GitHub Pages
-====================================
+gabriela. — deploy no GitHub Pages (v3)
+========================================
 
-⚠️ REGRA DE OURO: suba os ARQUIVOS soltos, NÃO a pasta.
-O index.html tem que ficar na RAIZ do repositório.
+⚠️ Suba os ARQUIVOS soltos, NÃO a pasta. O index.html fica na RAIZ.
 
-Arquivos desta pasta (são 7):
-  - index.html
-  - app.js
-  - manifest.json
-  - icon-192.png
-  - icon-512.png
-  - apple-touch-icon.png
-  - favicon.svg
+Arquivos (8): index.html, app.js, service-worker.js, manifest.json,
+icon-192.png, icon-512.png, apple-touch-icon.png, favicon.svg
 
-PASSOS:
-1. github.com -> "+" -> New repository -> nome "gabriela" -> Public -> Create
-2. "uploading an existing file" -> seleciona os 7 arquivos de dentro desta pasta -> Commit
-3. Settings -> Pages -> Source "Deploy from a branch" -> Branch "main" / "(root)" -> Save
-4. Espera ~1 min -> URL: https://SEU_USUARIO.github.io/gabriela/
-5. Abre no Safari do iPhone -> Compartilhar -> Adicionar a Tela de Inicio
+ATUALIZAR PARA v3: mudaram app.js, index.html e service-worker.js.
+Suba esses 3 (sobrescrevem). Os ícones/manifest seguem iguais.
 
-Para atualizar depois: substitui o arquivo no repo, o Pages atualiza sozinho.
+Novidades v3 (sobre a v2):
+  - 📸 OCR: ao lançar gasto, "Ler de um boleto ou nota" -> tira foto,
+    o app preenche valor e vencimento sozinho.
+  Já tinha (v2): offline + auto-update, backup, gastos recorrentes, centro Casa.
+
+PASSOS (só na 1ª vez):
+1. Repo Public  2. Upload na raiz -> Commit
+3. Settings -> Pages -> Deploy from branch -> main / (root)
+4. URL: https://SEU_USUARIO.github.io/REPO/
