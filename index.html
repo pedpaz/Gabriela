@@ -61,16 +61,17 @@ body {
 }
 
     #update-banner {
-      position: fixed; left: 50%; bottom: 104px; transform: translateX(-50%);
-      display: flex; align-items: center; gap: 12px; z-index: 60;
-      background: #2D241E; color: #F7F0E6; padding: 12px 16px; border-radius: 999px;
-      box-shadow: 0 8px 28px rgba(45,36,30,.35); font-family: 'Manrope', sans-serif; font-size: 13px;
-      animation: fadeUp .4s ease; max-width: 90%;
+      position: fixed; left: 16px; right: 16px; bottom: 24px; z-index: 60;
+      display: flex; align-items: center; gap: 12px; justify-content: space-between;
+      background: #2D241E; color: #F7F0E6; padding: 14px 16px; border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(45,36,30,.4); font-family: 'Manrope', sans-serif;
+      animation: fadeUp .45s ease; max-width: 460px; margin: 0 auto;
     }
+    #update-banner .msg { font-size: 13px; line-height: 1.35; flex: 1; }
     #update-banner button {
       background: #C4A059; color: #2D241E; border: none; border-radius: 999px;
-      padding: 7px 14px; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 700;
-      letter-spacing: .03em; cursor: pointer; white-space: nowrap;
+      padding: 9px 16px; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700;
+      letter-spacing: .02em; cursor: pointer; white-space: nowrap; flex-shrink: 0;
     }
     #install-chip {
       position: fixed; left: 18px; bottom: 34px; z-index: 55;
@@ -79,7 +80,7 @@ body {
       padding: 10px 16px; border-radius: 999px; cursor: pointer;
       box-shadow: 0 6px 20px rgba(45,36,30,.18); animation: fadeUp .4s ease;
     }
-    @keyframes fadeUp { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+    @keyframes fadeUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -93,21 +94,29 @@ body {
   </div>
   <script src="./app.js"></script>
   <script>
+  /* Recadinhos do Pedro quando tem atualização */
+  var UPDATE_MSGS = [
+    'Seu homem maravilhoso acabou de melhorar a sua vida 💛',
+    'Seu marido caprichou: tem novidade nova pra você ✨',
+    'Mexi aqui com carinho pra você, amor 💗',
+    'Feito com amor: o app ficou ainda melhor 🌸',
+    'Surpresinha nova esperando por você ✨',
+    'Seu amor deixou tudo mais bonito aqui 💛',
+  ];
+
   if ('serviceWorker' in navigator) {
-    var hasReloaded = false;
-    navigator.serviceWorker.addEventListener('message', function (e) {
-      if (e.data && e.data.type === 'SW_UPDATED' && !hasReloaded) { hasReloaded = true; setTimeout(function () { window.location.reload(); }, 500); }
-    });
     var controllerChanged = false;
-    navigator.serviceWorker.addEventListener('controllerchange', function () { if (controllerChanged) return; controllerChanged = true; window.location.reload(); });
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (controllerChanged) return; controllerChanged = true; window.location.reload();
+    });
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('./service-worker.js').then(function (reg) {
         setInterval(function () { reg.update().catch(function () {}); }, 60000);
-        if (reg.waiting) showUpdateBanner(reg);
+        if (reg.waiting && navigator.serviceWorker.controller) showUpdateBanner(reg);
         reg.addEventListener('updatefound', function () {
           var newSW = reg.installing; if (!newSW) return;
           newSW.addEventListener('statechange', function () {
-            if (newSW.state === 'installed' && navigator.serviceWorker.controller) { showUpdateBanner(reg); newSW.postMessage({ type: 'SKIP_WAITING' }); }
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) showUpdateBanner(reg);
           });
         });
       }).catch(function (err) { console.warn('SW falhou:', err); });
@@ -115,14 +124,16 @@ body {
   }
   function showUpdateBanner(reg) {
     if (document.getElementById('update-banner')) return;
+    var msg = UPDATE_MSGS[Math.floor(Math.random() * UPDATE_MSGS.length)];
     var b = document.createElement('div'); b.id = 'update-banner';
-    b.innerHTML = '<span>✨ Versão nova disponível</span><button id="btn-reload-now">Atualizar</button>';
+    b.innerHTML = '<span class="msg">' + msg + '</span><button id="btn-reload-now">Atualizar 💛</button>';
     document.body.appendChild(b);
     document.getElementById('btn-reload-now').addEventListener('click', function () {
       if (reg && reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-      setTimeout(function () { window.location.reload(); }, 300);
+      else window.location.reload();
     });
   }
+
   var deferredInstallPrompt = null;
   window.addEventListener('beforeinstallprompt', function (e) {
     e.preventDefault(); deferredInstallPrompt = e;

@@ -1,7 +1,7 @@
 // Service Worker — gabriela.
 // Estratégia: network-first pro HTML/app.js (pega versão nova), cache-first pros assets + OCR.
-const CACHE = 'gabriela-v12';
-const VERSION = 'v12';
+const CACHE = 'gabriela-v13';
+const VERSION = 'v13';
 const FILES = [
   './',
   './index.html',
@@ -15,7 +15,6 @@ const FILES = [
 
 // Install: pré-cacheia e ativa imediatamente
 self.addEventListener('install', function (e) {
-  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE).then(function (cache) {
       return cache.addAll(FILES).catch(function (err) {
