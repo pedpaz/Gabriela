@@ -22,10 +22,6 @@ html, body {
   padding: 0;
   background: #F7F0E6;
   -webkit-tap-highlight-color: transparent;
-  overflow-x: hidden;
-  width: 100%;
-  max-width: 100%;
-  position: relative;
 }
 
 body {
@@ -97,33 +93,21 @@ body {
   </div>
   <script src="./app.js"></script>
   <script>
-  /* PWA — service worker, auto-update e instalação */
   if ('serviceWorker' in navigator) {
     var hasReloaded = false;
     navigator.serviceWorker.addEventListener('message', function (e) {
-      if (e.data && e.data.type === 'SW_UPDATED' && !hasReloaded) {
-        hasReloaded = true;
-        setTimeout(function () { window.location.reload(); }, 500);
-      }
+      if (e.data && e.data.type === 'SW_UPDATED' && !hasReloaded) { hasReloaded = true; setTimeout(function () { window.location.reload(); }, 500); }
     });
     var controllerChanged = false;
-    navigator.serviceWorker.addEventListener('controllerchange', function () {
-      if (controllerChanged) return;
-      controllerChanged = true;
-      window.location.reload();
-    });
+    navigator.serviceWorker.addEventListener('controllerchange', function () { if (controllerChanged) return; controllerChanged = true; window.location.reload(); });
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('./service-worker.js').then(function (reg) {
         setInterval(function () { reg.update().catch(function () {}); }, 60000);
         if (reg.waiting) showUpdateBanner(reg);
         reg.addEventListener('updatefound', function () {
-          var newSW = reg.installing;
-          if (!newSW) return;
+          var newSW = reg.installing; if (!newSW) return;
           newSW.addEventListener('statechange', function () {
-            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              showUpdateBanner(reg);
-              newSW.postMessage({ type: 'SKIP_WAITING' });
-            }
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) { showUpdateBanner(reg); newSW.postMessage({ type: 'SKIP_WAITING' }); }
           });
         });
       }).catch(function (err) { console.warn('SW falhou:', err); });
@@ -131,8 +115,7 @@ body {
   }
   function showUpdateBanner(reg) {
     if (document.getElementById('update-banner')) return;
-    var b = document.createElement('div');
-    b.id = 'update-banner';
+    var b = document.createElement('div'); b.id = 'update-banner';
     b.innerHTML = '<span>✨ Versão nova disponível</span><button id="btn-reload-now">Atualizar</button>';
     document.body.appendChild(b);
     document.getElementById('btn-reload-now').addEventListener('click', function () {
@@ -142,25 +125,17 @@ body {
   }
   var deferredInstallPrompt = null;
   window.addEventListener('beforeinstallprompt', function (e) {
-    e.preventDefault();
-    deferredInstallPrompt = e;
+    e.preventDefault(); deferredInstallPrompt = e;
     if (document.getElementById('install-chip')) return;
-    var chip = document.createElement('button');
-    chip.id = 'install-chip';
-    chip.textContent = '↓ Instalar app';
+    var chip = document.createElement('button'); chip.id = 'install-chip'; chip.textContent = '↓ Instalar app';
     chip.addEventListener('click', function () {
       if (!deferredInstallPrompt) return;
       deferredInstallPrompt.prompt();
-      deferredInstallPrompt.userChoice.then(function () {
-        deferredInstallPrompt = null;
-        chip.remove();
-      });
+      deferredInstallPrompt.userChoice.then(function () { deferredInstallPrompt = null; chip.remove(); });
     });
     document.body.appendChild(chip);
   });
-  window.addEventListener('appinstalled', function () {
-    var c = document.getElementById('install-chip'); if (c) c.remove();
-  });
+  window.addEventListener('appinstalled', function () { var c = document.getElementById('install-chip'); if (c) c.remove(); });
   </script>
 </body>
 </html>

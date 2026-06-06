@@ -1,4 +1,4 @@
-gabriela. — deploy no GitHub Pages (v10)
+gabriela. — deploy no GitHub Pages (v12)
 ========================================
 
 ⚠️ Suba os ARQUIVOS soltos, NÃO a pasta. O index.html fica na RAIZ.
